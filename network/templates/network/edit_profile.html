@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование профиля — DevNet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'network/feed.css' %}?v=prem1">
+    <link rel="stylesheet" href="{% static 'network/profile.css' %}?v=prem1">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'feed' %}" class="logo">
+                <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                <span class="logo-text">DevNet</span>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="{% url 'feed' %}" class="nav-link">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Лента
+                </a>
+                <a href="{% url 'profile' %}" class="nav-link active">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Профиль
+                </a>
+                <a href="{% url 'chat' %}" class="nav-link">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Чаты
+                </a>
+            </nav>
+
+            <div class="nav-auth">
+                <a href="{% url 'profile' %}" class="user-pill">
+                    <span class="user-avatar-mini">{{ user.username|first|upper }}</span>
+                    <span class="user-name-text">{{ user.username }}</span>
+                </a>
+                <a href="{% url 'logout' %}" class="btn-ghost" title="Выйти из аккаунта">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-wrapper">
+        <div class="feed-headline">
+            <h2>Настройки профиля</h2>
+            <a href="{% url 'profile' %}" class="btn-secondary">Назад в профиль</a>
+        </div>
+
+        <section class="feed-card edit-profile-card">
+            <form method="post" enctype="multipart/form-data" class="edit-profile-form">
+                {% csrf_token %}
+
+                <div class="avatar-upload-section">
+                    <div class="avatar-current-preview">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="preview-avatar-img">
+                        {% else %}
+                            <span class="preview-avatar-placeholder">{{ user.username|first|upper }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="avatar-upload-controls">
+                        <label for="id-avatar-input" class="btn-secondary btn-upload-avatar">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                            Загрузить фото профиля
+                        </label>
+                        <input type="file" id="id-avatar-input" name="avatar" accept="image/*" class="hidden-file-input">
+                        <span class="avatar-upload-hint">Поддерживаются PNG, JPG, WEBP</span>
+                    </div>
+                </div>
+
+                <div class="form-group-block">
+                    <label for="id-specialization" class="form-field-label">Специализация</label>
+                    <input type="text" id="id-specialization" name="specialization" value="{{ profile.specialization|default:'' }}" placeholder="например: Backend Developer (Python / Django)" class="composer-title-input">
+                </div>
+
+                <div class="form-group-block">
+                    <label for="id-bio" class="form-field-label">О себе</label>
+                    <textarea id="id-bio" name="bio" rows="4" placeholder="Расскажите о своем опыте, проектах, стеке технологий или интересах..." class="composer-text-input">{{ profile.bio|default:'' }}</textarea>
+                </div>
+
+                <div class="form-group-block">
+                    <label for="id-github" class="form-field-label">Ссылка на GitHub или портфолио</label>
+                    <input type="url" id="id-github" name="github" value="{{ profile.github|default:'' }}" placeholder="https://github.com/username" class="composer-title-input">
+                </div>
+
+                <div class="edit-profile-actions">
+                    <a href="{% url 'profile' %}" class="btn-secondary">Отмена</a>
+                    <button type="submit" class="btn-primary">Сохранить изменения</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('id-avatar-input').addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewBox = document.querySelector('.avatar-current-preview');
+                    previewBox.innerHTML = '<img src="' + e.target.result + '" class="preview-avatar-img">';
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    </script>
+</body>
+</html>

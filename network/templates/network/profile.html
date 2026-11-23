@@ -1,0 +1,258 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль {{ profile_user.username }} — DevNet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="{% static 'network/feed.css' %}?v=prem1">
+    <link rel="stylesheet" href="{% static 'network/profile.css' %}?v=prem1">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'feed' %}" class="logo">
+                <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                <span class="logo-text">DevNet</span>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="{% url 'feed' %}" class="nav-link">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Лента
+                </a>
+                <a href="{% url 'profile' %}" class="nav-link {% if is_own_profile %}active{% endif %}">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Профиль
+                </a>
+                <a href="{% url 'chat' %}" class="nav-link">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Чаты
+                </a>
+            </nav>
+
+            <div class="nav-auth">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="user-pill">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="user-avatar-micro-img">
+                        {% else %}
+                            <span class="user-avatar-mini">{{ user.username|first|upper }}</span>
+                        {% endif %}
+                        <span class="user-name-text">{{ user.username }}</span>
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn-ghost" title="Выйти из аккаунта">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-secondary">Войти</a>
+                    <a href="{% url 'register' %}" class="btn-primary">Создать аккаунт</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="main-wrapper">
+        <section class="feed-card profile-banner-card">
+            <div class="profile-hero-row">
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="{{ profile_user.username }}" class="profile-large-avatar-img">
+                {% else %}
+                    <div class="profile-large-avatar">{{ profile_user.username|first|upper }}</div>
+                {% endif %}
+
+                <div class="profile-title-block">
+                    <div class="profile-user-headline">
+                        <h2>{{ profile_user.username }}</h2>
+                        {% if profile_user.is_superuser %}
+                            <span class="badge-role">Администратор</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="profile-spec-label">
+                        {{ profile.specialization|default:"Разработчик" }}
+                    </div>
+
+                    <span class="profile-reg-date">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        На платформе с {{ profile_user.date_joined|date:"d E Y" }}
+                    </span>
+                </div>
+
+                <div class="profile-hero-actions">
+                    {% if is_own_profile %}
+                        <a href="{% url 'edit_profile' %}" class="btn-secondary btn-edit-profile">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                            Настроить профиль
+                        </a>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'chat_with_user' profile_user.id %}" class="btn-primary btn-message-profile">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            Написать сообщение
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if profile.bio %}
+                <div class="profile-bio-box">
+                    <p>{{ profile.bio }}</p>
+                </div>
+            {% endif %}
+
+            {% if profile.github %}
+                <div class="profile-links-bar">
+                    <a href="{{ profile.github }}" target="_blank" rel="noopener noreferrer" class="profile-github-link">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        <span>{{ profile.github }}</span>
+                    </a>
+                </div>
+            {% endif %}
+
+            <div class="profile-stats-row">
+                <div class="stat-pill">
+                    <span class="stat-digit">{{ user_posts|length }}</span>
+                    <span class="stat-text">Публикаций</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-digit">{{ user_comments_count|default:"0" }}</span>
+                    <span class="stat-text">Ответов в коде</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-digit">{{ profile.specialization|default:"General" }}</span>
+                    <span class="stat-text">Специализация</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="feed-headline">
+            {% if is_own_profile %}
+                <h2>Мои публикации ({{ user_posts|length }})</h2>
+                <a href="{% url 'feed' %}" class="btn-primary btn-new-post">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Новый пост
+                </a>
+            {% else %}
+                <h2>Публикации автора ({{ user_posts|length }})</h2>
+            {% endif %}
+        </div>
+
+        <section class="posts-stream">
+            {% for p in user_posts %}
+                <article class="feed-card post-card" id="post-{{ p.id }}">
+                    <header class="post-card-header">
+                        <div class="post-author-box">
+                            <a href="/profile/{{ p.author.username }}/" class="post-author-link">
+                                {% if profile.avatar %}
+                                    <img src="{{ profile.avatar.url }}" alt="{{ p.author.username }}" class="author-avatar-img">
+                                {% else %}
+                                    <span class="author-avatar-circle">{{ p.author.username|first|upper }}</span>
+                                {% endif %}
+                                <div class="author-meta">
+                                    <span class="author-login">{{ p.author.username }}</span>
+                                    <span class="post-time">{{ p.created_at|date:"d M в H:i" }}</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="post-card-actions-top">
+                            <span class="pill-tag">{{ p.launguage|upper }}</span>
+                            {% if is_own_profile %}
+                                <form method="post" action="/post/{{ p.id }}/delete/" onsubmit="return confirm('Удалить эту публикацию?');" class="inline-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-icon-danger" title="Удалить публикацию">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </header>
+
+                    <h3 class="post-heading">{{ p.title }}</h3>
+                    <div class="post-body-text">{{ p.content }}</div>
+
+                    {% if p.code %}
+                        <div class="code-display-block">
+                            <div class="code-display-header">
+                                <div class="terminal-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                                <span class="code-display-lang">{{ p.launguage }}</span>
+                            </div>
+                            <pre><code class="language-{{ p.launguage|lower }}">{{ p.code }}</code></pre>
+                        </div>
+                    {% endif %}
+
+                    {% if p.attached_file %}
+                        <div class="attachment-telegram-box">
+                            <div class="attachment-telegram-left">
+                                <div class="file-badge-icon">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                                </div>
+                                <div class="file-badge-details">
+                                    <span class="file-badge-name">{{ p.attached_file.name }}</span>
+                                    <span class="file-badge-meta">Вложение разработчика</span>
+                                </div>
+                            </div>
+                            <a href="{{ p.attached_file.url }}" target="_blank" download class="btn-download-file">
+                                Скачать
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <footer class="post-card-footer">
+                        <span class="action-pill">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            <span>Ответов: {{ p.comments.count }}</span>
+                        </span>
+                        <a href="{% url 'feed' %}#post-{{ p.id }}" class="action-pill action-share-btn">
+                            <span>Открыть в ленте</span>
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </footer>
+                </article>
+            {% empty %}
+                <div class="feed-card empty-feed-box">
+                    <div class="empty-feed-icon">
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    {% if is_own_profile %}
+                        <h3>У вас пока нет публикаций</h3>
+                        <p>Поделитесь вашей первой задачей или сниппетом кода в ленте сообщества.</p>
+                        <div style="margin-top: 14px;">
+                            <a href="{% url 'feed' %}" class="btn-primary">Перейти в ленту</a>
+                        </div>
+                    {% else %}
+                        <h3>У пользователя пока нет публикаций</h3>
+                        <p>Этот разработчик еще не опубликовал ни одного поста.</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            hljs.highlightAll();
+        });
+
+        fetch("{% static 'network/milord.txt' %}")
+            .then(res => res.text())
+            .then(art => {
+                console.log("%c" + art, "color: #58a6ff; font-family: monospace; font-size: 6px; line-height: 6px;");
+                console.log("%c⚡ DevNet Console: Добро пожаловать, милорд! 🚀", "color: #3fb950; font-size: 13px; font-weight: 600; padding: 4px;");
+            });
+    </script>
+</body>
+</html>

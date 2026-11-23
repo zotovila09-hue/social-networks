@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чаты — DevNet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="{% static 'network/feed.css' %}?v=prem1">
+    <link rel="stylesheet" href="{% static 'network/chat.css' %}?v=prem1">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'feed' %}" class="logo">
+                <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                <span class="logo-text">DevNet</span>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="{% url 'feed' %}" class="nav-link">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Лента
+                </a>
+                <a href="{% url 'profile' %}" class="nav-link">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Профиль
+                </a>
+                <a href="{% url 'chat' %}" class="nav-link active">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Чаты
+                </a>
+            </nav>
+
+            <div class="nav-auth">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="user-pill">
+                        <span class="user-avatar-mini">{{ user.username|first|upper }}</span>
+                        <span class="user-name-text">{{ user.username }}</span>
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn-ghost" title="Выйти из аккаунта">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-secondary">Войти</a>
+                    <a href="{% url 'register' %}" class="btn-primary">Создать аккаунт</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="messenger-viewport">
+        <div class="messenger-frame">
+            
+            <aside class="dialogs-sidebar">
+                <div class="dialogs-head">
+                    <h3>Сообщения</h3>
+                </div>
+                <div class="dialogs-scroller">
+                    {% for u in other_users %}
+                        <a href="{% url 'chat_with_user' u.id %}" class="dialog-row {% if recipient and recipient.id == u.id %}active{% endif %}">
+                            <span class="dialog-circle-avatar">{{ u.username|first|upper }}</span>
+                            <div class="dialog-content-info">
+                                <span class="dialog-title">{{ u.username }}</span>
+                                <span class="dialog-snippet">Начать общение</span>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <div class="dialogs-empty">Пока нет других разработчиков для переписки</div>
+                    {% endfor %}
+                </div>
+            </aside>
+
+            <section class="conversation-pane">
+                {% if recipient %}
+                    <header class="conversation-top">
+                        <div class="conversation-interlocutor">
+                            <span class="conversation-avatar">{{ recipient.username|first|upper }}</span>
+                            <div class="conversation-meta">
+                                <span class="conversation-name">{{ recipient.username }}</span>
+                                <span class="conversation-status">В сети</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="conversation-history" id="chat-messages">
+                        {% for m in messages_list %}
+                            <div class="msg-row {% if m.sender == user %}my-row{% else %}their-row{% endif %}">
+                                <div class="msg-bubble {% if m.sender == user %}my-bubble{% else %}their-bubble{% endif %}">
+                                    <div class="msg-text">{{ m.text }}</div>
+                                    {% if m.code %}
+                                        <div class="msg-code-block">
+                                            <pre><code>{{ m.code }}</code></pre>
+                                        </div>
+                                    {% endif %}
+                                    <span class="msg-time">{{ m.created_at|date:"H:i" }}</span>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="history-empty">
+                                <div class="history-empty-icon">
+                                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                </div>
+                                <p>Диалог с разработчиком <strong>{{ recipient.username }}</strong></p>
+                                <span>Напишите первое сообщение или поделитесь сниппетом кода</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <footer class="conversation-bottom">
+                        <form method="post" action="{% url 'chat_with_user' recipient.id %}" class="message-composer">
+                            {% csrf_token %}
+                            
+                            <div class="composer-code-box" id="code-drawer" style="display: none;">
+                                <div class="composer-code-bar">
+                                    <span>Сниппет кода</span>
+                                    <button type="button" class="btn-drawer-x" onclick="toggleChatCode()">✕</button>
+                                </div>
+                                <textarea name="code" id="chat-code-field" rows="4" placeholder="// Вставьте код (Tab поддерживается)..." class="composer-code-field"></textarea>
+                            </div>
+
+                            <div class="composer-bar">
+                                <button type="button" class="btn-code-attach" onclick="toggleChatCode()" title="Прикрепить код">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                                </button>
+                                <input type="text" name="text" placeholder="Напишите сообщение..." required autocomplete="off" class="composer-text-field" autofocus>
+                                <button type="submit" class="btn-primary btn-send-message">
+                                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </footer>
+                {% else %}
+                    <div class="empty-conversation-state">
+                        <div class="empty-state-icon">
+                            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        </div>
+                        <h3>Выберите диалог</h3>
+                        <p>Выберите собеседника из списка слева, чтобы начать переписку.</p>
+                    </div>
+                {% endif %}
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleChatCode() {
+            const drawer = document.getElementById('code-drawer');
+            if (drawer) {
+                if (drawer.style.display === 'none') {
+                    drawer.style.display = 'block';
+                    const textarea = document.getElementById('chat-code-field');
+                    if (textarea) textarea.focus();
+                } else {
+                    drawer.style.display = 'none';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            hljs.highlightAll();
+
+            const messagesArea = document.getElementById('chat-messages');
+            if (messagesArea) {
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }
+
+            const codeField = document.getElementById('chat-code-field');
+            if (codeField) {
+                codeField.addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        const spaces = '    ';
+                        this.value = this.value.substring(0, start) + spaces + this.value.substring(end);
+                        this.selectionStart = this.selectionEnd = start + spaces.length;
+                    }
+                });
+            }
+        });
+
+        fetch("{% static 'network/milord.txt' %}")
+            .then(res => res.text())
+            .then(art => {
+                console.log("%c" + art, "color: #58a6ff; font-family: monospace; font-size: 6px; line-height: 6px;");
+                console.log("%c⚡ DevNet Console: Добро пожаловать, милорд! 🚀", "color: #3fb950; font-size: 13px; font-weight: 600; padding: 4px;");
+            });
+    </script>
+</body>
+</html>

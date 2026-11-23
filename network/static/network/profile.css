@@ -1,0 +1,244 @@
+.profile-banner-card {
+    margin-bottom: 24px;
+    padding: 24px;
+}
+
+.profile-hero-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-large-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--bg-element);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.profile-large-avatar-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+}
+
+.author-avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+}
+
+.profile-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.profile-user-headline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-user-headline h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.3px;
+}
+
+.badge-role {
+    background: rgba(35, 134, 54, 0.15);
+    color: #3fb950;
+    border: 1px solid rgba(59, 185, 80, 0.3);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.profile-spec-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+}
+
+.profile-reg-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.profile-hero-actions {
+    margin-left: auto;
+}
+
+.btn-edit-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 6px 14px;
+}
+
+.profile-bio-box {
+    padding: 14px 0 6px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #c9d1d9;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-links-bar {
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.12s ease;
+}
+
+.profile-github-link:hover {
+    color: var(--text-main);
+}
+
+.profile-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding-top: 18px;
+}
+
+.stat-pill {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: center;
+}
+
+.stat-digit {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-text {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+
+.btn-new-post {
+    padding: 5px 12px;
+    font-size: 12px;
+}
+
+.edit-profile-card {
+    padding: 24px;
+}
+
+.edit-profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.avatar-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.avatar-current-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--bg-element);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.preview-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-avatar-placeholder {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.avatar-upload-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.btn-upload-avatar {
+    cursor: pointer;
+    padding: 7px 14px;
+}
+
+.avatar-upload-hint {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.form-group-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-field-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.edit-profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+}

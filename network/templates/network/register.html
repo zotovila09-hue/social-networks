@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация — DevNet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'network/register.css' %}?v=prem1">
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="{% url 'feed' %}" class="logo">
+                    <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    <span class="logo-text">DevNet</span>
+                </a>
+                <h2>Регистрация в DevNet</h2>
+                <p>Присоединяйтесь к сообществу разработчиков</p>
+            </div>
+
+            {% if form.errors %}
+                <div class="auth-error-box">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <div class="auth-error-item">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                <span>{{ error }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+
+                <div class="field-group">
+                    <label for="id_username">Имя пользователя (Логин)</label>
+                    <input type="text" name="username" id="id_username" value="{{ form.username.value|default:'' }}" placeholder="например: alex_dev" required autofocus>
+                </div>
+
+                <div class="field-group">
+                    <label for="id_pass1">Пароль</label>
+                    <input type="password" name="password1" id="id_pass1" placeholder="минимум 8 символов" required>
+                </div>
+
+                <div class="field-group">
+                    <label for="id_pass2">Повторите пароль</label>
+                    <input type="password" name="password2" id="id_pass2" placeholder="подтверждение пароля" required>
+                </div>
+
+                <button type="submit" class="btn-primary btn-auth-submit">Зарегистрироваться</button>
+            </form>
+
+            <div class="auth-footer">
+                <span>Уже зарегистрированы? <a href="{% url 'login' %}">Войти</a></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        fetch("{% static 'network/milord.txt' %}")
+            .then(res => res.text())
+            .then(art => {
+                console.log("%c" + art, "color: #58a6ff; font-family: monospace; font-size: 6px; line-height: 6px;");
+            });
+    </script>
+</body>
+</html>
